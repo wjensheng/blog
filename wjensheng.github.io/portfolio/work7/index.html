@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>CarMax Sales Inventory</title>
+<meta name="description" content="My website">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.carousel.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.theme.css">
+
+
+  <link href="https://wjensheng.github.io/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+
+ 
+
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+<link href="https://wjensheng.github.io/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="https://wjensheng.github.io/img/favicon.png">
+
+
+</head>
+<body>
+  <div id="all">
+      <div class="container-fluid">
+          <div class="row row-offcanvas row-offcanvas-left">
+              <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
+  <div class="sidebar-content">
+    <h1 class="sidebar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+    
+      <p class="sidebar-p">Economics & Data Science major at University of Michigan.</p>
+    
+    <ul class="sidebar-menu">
+      
+        <li><a href="https://wjensheng.github.io/portfolio/">Home</a></li>
+      
+        <li><a href="https://wjensheng.github.io/about/">About</a></li>
+      
+        <li><a href="https://wjensheng.github.io/contact/">Get in touch</a></li>
+      
+    </ul>
+    <p class="social">
+  
+  
+  
+  
+  
+  <a href="mailto:jenshengw@gmail.com" data-animate-hover="pulse" class="email">
+    <i class="fa fa-envelope"></i>
+  </a>
+  
+  
+  
+  
+  <a href="https://github.com/wjensheng" data-animate-hover="pulse" class="external">
+    <i class="fa fa-github"></i>
+  </a>
+  
+  
+  
+</p>
+
+
+    <div class="copyright">
+      <p class="credit">
+        
+          &copy;2016 wjensheng
+        
+        | Template by <a href="https://bootstrapious.com/free-templates" class="external">Bootstrapious.com</a>
+
+&amp; ported to Hugo by <a href="https://github.com/kishaningithub">Kishan B</a>
+
+      </p>
+    </div>
+  </div>
+</div>
+
+              
+<div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
+  <div class="small-navbar visible-xs">
+  <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
+  <h1 class="small-navbar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+</div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="content-column-content">
+         <h1>CarMax Sales Inventory</h1>
+         <p>An exploratory data analysis and sales forecase for CarMax</p>
+
+<h4 id="introduction">Introduction</h4>
+
+<p>Here, I was given a data science challenge: to perform meaningful exploratory data analysis for a CarMax dataset scrapped from CarMax.</p>
+
+<p>My idea was the final day a car is listed on CarMax is the day it was sold.</p>
+
+<p>To test the idea, the following hypothesis is formed: 171,076 cars are sold between March and May 2016. The figure is based on page 26 of the 10Q by CarMax.</p>
+
+<p>I shall find out if this is true by creating a dataframe only with entries from March to May 2016.</p>
+
+<pre><code>tail_df = df.groupby('url').tail(1)
+sum(tail_df['price'])
+</code></pre>
+
+<p>The total sales from March to May is 3,350,894,231 USD while the 10Q reported 3,428,974 USD.</p>
+
+<h4 id="exploratory-data-analysis">Exploratory data analysis</h4>
+
+<p>We have 1,250,006 unique entries in our dataset, collected for 599 days across cars sold in 308 regions.</p>
+
+<p>The average days it takes to sell a car is 26 while the median is 17.</p>
+
+<p>Out of the 40 make, which is the most popular?</p>
+
+<p><img src="/img/portfolio/kmx-make.png" alt="kmx-make" /></p>
+
+<p>Cars having price ranging from 11,000 USD to 33,000 USD are most popular.</p>
+
+<p><img src="/img/portfolio/kmx-sold.png" alt="kmx-sold" /></p>
+
+<p>10,339 cars were sold on 2017-01-24, which is unusual.</p>
+
+<p>Which region has the best sales?</p>
+
+<pre><code>cars_bin_df['region'].value_counts()[:10]
+
+Norcross                  22334
+Ontario                   18291
+Texas Stadium (Irving)    17117
+Fredericksburg            17016
+Columbia                  17002
+Lancaster                 16759
+Hartford                  16264
+Austin North              15748
+Arlington/Ft. Worth       14999
+Oxnard                    14865
+</code></pre>
+
+<p>Norcross seems to have the best sales, followed by Ontario.</p>
+
+<h4 id="can-we-build-a-model-to-predict-how-long-does-it-take-to-sell-a-car">Can we build a model to predict how long does it take to sell a car?</h4>
+
+<p>Let us split our dataset in terms of time, having training data from 12-2015 to 08-2016 and test data from 9-2016 to 11-2016. These dates align with CarMax&rsquo;s 10-Q. We then try to estimate the sales for our test data.</p>
+
+<p>Here, I attempted to apply Entity Embedding using <code>fastai</code>. Here is a snippet:</p>
+
+<pre><code>learn = tabular_learner(data, layers=[1000,500], 
+                        ps=[0.001,0.01], 
+                        emb_drop=0.04, 
+                        y_range=y_range, 
+                        metrics=mse)
+learn.model
+
+TabularModel(
+  (embeds): ModuleList(
+    (0): Embedding(41, 13)
+    (1): Embedding(2586, 130)
+    (2): Embedding(311, 40)
+    (3): Embedding(15, 7)
+  )
+  (emb_drop): Dropout(p=0.04)
+  (bn_cont): BatchNorm1d(3, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (layers): Sequential(
+    (0): Linear(in_features=193, out_features=1000, bias=True)
+    (1): ReLU(inplace)
+    (2): BatchNorm1d(1000, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): Dropout(p=0.001)
+    (4): Linear(in_features=1000, out_features=500, bias=True)
+    (5): ReLU(inplace)
+    (6): BatchNorm1d(500, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): Dropout(p=0.01)
+    (8): Linear(in_features=500, out_features=1, bias=True)
+  )
+)
+</code></pre>
+
+<p>The model only predicted 128,530 cars would be sold in the 3 months, quite a good estimation compared to 156,789 (from page 22 of 10-Q).</p>
+         
+      </div>
+    </div>
+  </div>
+</div>
+
+          </div>
+      </div>
+  </div>
+  <script src="https://wjensheng.github.io/js/jquery.min.js"></script>
+<script src="https://wjensheng.github.io/js/bootstrap.min.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.cookie.js"> </script>
+<script src="https://wjensheng.github.io/js/ekko-lightbox.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.scrollTo.min.js"></script>
+<script src="https://wjensheng.github.io/js/masonry.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/imagesloaded.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/owl.carousel.min.js"></script>
+<script src="https://wjensheng.github.io/js/front.js"></script>
+
+
+
+</body>
+</html>

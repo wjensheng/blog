@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Ernst &amp; Young</title>
+<meta name="description" content="My website">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.carousel.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.theme.css">
+
+
+  <link href="https://wjensheng.github.io/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+
+ 
+
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+<link href="https://wjensheng.github.io/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="https://wjensheng.github.io/img/favicon.png">
+
+
+</head>
+<body>
+  <div id="all">
+      <div class="container-fluid">
+          <div class="row row-offcanvas row-offcanvas-left">
+              <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
+  <div class="sidebar-content">
+    <h1 class="sidebar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+    
+      <p class="sidebar-p">Economics & Data Science major at University of Michigan.</p>
+    
+    <ul class="sidebar-menu">
+      
+        <li><a href="https://wjensheng.github.io/portfolio/">Home</a></li>
+      
+        <li><a href="https://wjensheng.github.io/about/">About</a></li>
+      
+        <li><a href="https://wjensheng.github.io/contact/">Get in touch</a></li>
+      
+    </ul>
+    <p class="social">
+  
+  
+  
+  
+  
+  <a href="mailto:jenshengw@gmail.com" data-animate-hover="pulse" class="email">
+    <i class="fa fa-envelope"></i>
+  </a>
+  
+  
+  
+  
+  <a href="https://github.com/wjensheng" data-animate-hover="pulse" class="external">
+    <i class="fa fa-github"></i>
+  </a>
+  
+  
+  
+</p>
+
+
+    <div class="copyright">
+      <p class="credit">
+        
+          &copy;2016 wjensheng
+        
+        | Template by <a href="https://bootstrapious.com/free-templates" class="external">Bootstrapious.com</a>
+
+&amp; ported to Hugo by <a href="https://github.com/kishaningithub">Kishan B</a>
+
+      </p>
+    </div>
+  </div>
+</div>
+
+              
+<div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
+  <div class="small-navbar visible-xs">
+  <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
+  <h1 class="small-navbar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+</div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="content-column-content">
+         <h1>Ernst &amp; Young</h1>
+         <p>Predict location of mobile device given historical trajectory data</p>
+
+<h4 id="introduction">Introduction</h4>
+
+<p>This post presents the 24th place solution globally (and 1st place solution in the US) for EY NextWave Data Science Competition 2019.</p>
+
+<p>The aim of the competition is to investigate how data can help the next smart city thrive, and boost the mobility of the future.</p>
+
+<p><img src="/img/portfolio/ey-cert.png" alt="ey-cert" /></p>
+
+<h4 id="feature-engineering">Feature Engineering</h4>
+
+<h5 id="distance">Distance</h5>
+
+<p>First, I created some helper functions and converted the coordinates of the 4 egdes of the city centre to latitudes and longitudes. The other features I derived from these 2 are:</p>
+
+<pre><code>Distance features: haversine, manhattan, euclidean, and hausdorff
+Lag features - previous location
+Rotation
+Distance to borders
+</code></pre>
+
+<p><img src="/img/portfolio/ey-distance.png" alt="ey-distance" /></p>
+
+<h5 id="time">Time</h5>
+
+<p>For each entry, I recorded the duration between entry and exit time and also the speed, which essentially is distance over time.</p>
+
+<h5 id="grid-size">Grid size</h5>
+
+<p>I used created grid sizes of 10, 100, 200, 500, and 1000:</p>
+
+<pre><code>sizes = [10, 100, 200, 500, 1000]
+
+# grid
+def class_en_ex(df, sizes):
+    for size in sizes:
+        *jwd_class_entry, = map(lambda x,y:(int(x*size)%size)*size+(int(-y*size)%size), 
+                            df[&quot;lat_entry&quot;], 
+                            df[&quot;lon_entry&quot;])
+
+        *jwd_class_exit, = map(lambda x,y:(int(x*size)%size)*size+(int(-y*size)%size), 
+                            df[&quot;prev_lat_exit&quot;], 
+                            df[&quot;prev_lon_exit&quot;])
+
+        df[&quot;class_entry_&quot; + str(size)] = jwd_class_entry
+        df[&quot;class_exit_&quot; + str(size)] = jwd_class_exit
+</code></pre>
+
+<h5 id="frequency">Frequency</h5>
+
+<p>Frequency on latitudes and longitudes – to mimic congestion:</p>
+
+<pre><code>def encode_FE(df, col, test):
+    cv = df[col].value_counts()
+    nm = col+'_FE'
+    df[nm] = df[col].map(cv)
+    test[nm] = test[col].map(cv)
+    test[nm].fillna(0,inplace=True)
+    if cv.max()&lt;=255:
+        df[nm] = df[nm].astype('uint8')
+        test[nm] = test[nm].astype('uint8')
+    else:
+        df[nm] = df[nm].astype('uint16')
+        test[nm] = test[nm].astype('uint16')        
+    return  
+</code></pre>
+
+<p>Here, I demonstrate that having frequency encoding for the <code>class_entry_200</code> is beneficial for lightgbm because it is unable to capture the spikes in the orange bar. The only way for tree algorithms to capture such spikes is by performing a frequency encoding for the variables.</p>
+
+<p><img src="/img/portfolio/ey-fe.png" alt="ey-fe" /></p>
+
+<h4 id="statistical-features">Statistical features</h4>
+
+<p>Since gradient boosting algorithms are unable to capture statistical features, I created the statistical features of the number of sessions, mean, standard deviation, median, max, and min for the top 30 variables <code>top_vars</code> that <code>lightgbm</code> deem are important.</p>
+
+<h4 id="validation-strategy">Validation strategy</h4>
+
+<p>Below, I employed a <code>KFold</code> validation strategy with <code>k=5</code> since it aligns well with public leaderboard score. For each fold, the model will predict on the <code>val</code> and <code>test</code> set. The output for the test set is then averaged across all folds.</p>
+
+<p>I also created a customized <code>f1_score</code> for <code>lightgbm</code> to ensure it maximizes <code>f1_score</code> instead of other binary classification metric.</p>
+
+<p>Things are slightly interesting here. My initial strategy was to train on the training set which includes all sessions but the last session, validate on the last session from train_data and predict on the last session from test_data. My highest public leaderboard score for this approach was around 0.867.</p>
+
+<p>I then switched to the <code>KFold</code> strategy of training and validating on only the final session from train_data and predict the last session from test_data. This approach boosted my score to 0.88 on the public leaderboard.</p>
+
+<h4 id="model">Model</h4>
+
+<p>My baseline was a <code>lightgbm</code> with <code>max_depth=5</code> and <code>learning_rate=0.05</code> before I tuned for hypermeters. I then tuned for hyperparameteres using <code>hyperopt</code>.</p>
+
+<h4 id="feature-importance">Feature Importance</h4>
+
+<p>Here I plot feature_importance ranked by <code>lightgbm</code>.</p>
+
+<p><img src="/img/portfolio/ey-fimport.png" alt="ey-fe" /></p>
+
+<h4 id="journey-to-discovering-magic">Journey to Discovering Magic</h4>
+
+<p>I was stuck at 7th place for 3 weeks – public leaderboard score of 0.870. I then proceeded to discard all sessions other than the last session, which contradicts the saying “the more the merrier”. My final <code>train_data</code> had 134,063 entries and I leaped to the 2nd place. After tuning for hyperparameters using <code>hyperopt</code>, I was at the 1st place.</p>
+         
+      </div>
+    </div>
+  </div>
+</div>
+
+          </div>
+      </div>
+  </div>
+  <script src="https://wjensheng.github.io/js/jquery.min.js"></script>
+<script src="https://wjensheng.github.io/js/bootstrap.min.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.cookie.js"> </script>
+<script src="https://wjensheng.github.io/js/ekko-lightbox.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.scrollTo.min.js"></script>
+<script src="https://wjensheng.github.io/js/masonry.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/imagesloaded.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/owl.carousel.min.js"></script>
+<script src="https://wjensheng.github.io/js/front.js"></script>
+
+
+
+</body>
+</html>

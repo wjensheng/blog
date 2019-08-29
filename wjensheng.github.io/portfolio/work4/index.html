@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>NBA Hackathon 2019</title>
+<meta name="description" content="My website">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.carousel.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.theme.css">
+
+
+  <link href="https://wjensheng.github.io/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+
+ 
+
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+<link href="https://wjensheng.github.io/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="https://wjensheng.github.io/img/favicon.png">
+
+
+</head>
+<body>
+  <div id="all">
+      <div class="container-fluid">
+          <div class="row row-offcanvas row-offcanvas-left">
+              <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
+  <div class="sidebar-content">
+    <h1 class="sidebar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+    
+      <p class="sidebar-p">Economics & Data Science major at University of Michigan.</p>
+    
+    <ul class="sidebar-menu">
+      
+        <li><a href="https://wjensheng.github.io/portfolio/">Home</a></li>
+      
+        <li><a href="https://wjensheng.github.io/about/">About</a></li>
+      
+        <li><a href="https://wjensheng.github.io/contact/">Get in touch</a></li>
+      
+    </ul>
+    <p class="social">
+  
+  
+  
+  
+  
+  <a href="mailto:jenshengw@gmail.com" data-animate-hover="pulse" class="email">
+    <i class="fa fa-envelope"></i>
+  </a>
+  
+  
+  
+  
+  <a href="https://github.com/wjensheng" data-animate-hover="pulse" class="external">
+    <i class="fa fa-github"></i>
+  </a>
+  
+  
+  
+</p>
+
+
+    <div class="copyright">
+      <p class="credit">
+        
+          &copy;2016 wjensheng
+        
+        | Template by <a href="https://bootstrapious.com/free-templates" class="external">Bootstrapious.com</a>
+
+&amp; ported to Hugo by <a href="https://github.com/kishaningithub">Kishan B</a>
+
+      </p>
+    </div>
+  </div>
+</div>
+
+              
+<div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
+  <div class="small-navbar visible-xs">
+  <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
+  <h1 class="small-navbar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+</div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="content-column-content">
+         <h1>NBA Hackathon 2019</h1>
+         <p>Predict engagement of Instagram posts by @nba</p>
+
+<h4 id="introduction">Introduction</h4>
+
+<p>This post presents the solution for NBA Hackathon business analytics track.</p>
+
+<p>All participants were tasked with predicting the &ldquo;engagement&rdquo; of Instagram posts by @nba. It was first noted by @nba that &ldquo;engagement&rdquo; is not the number of likes of a post.</p>
+
+<h4 id="adversarial-validation">Adversarial validation</h4>
+
+<p>Given a training set and test set, I wanted to decide if I should perform a random split or time-based split for my validation set. I set out to do adversarial validation on both the training and test set.</p>
+
+<p>The idea is to make the model predict whether is an entry a training or test set by assigning a label of 1 to the training set and 0 to the test set.</p>
+
+<p>If the AUC-ROC is around 0.5, it means the model cannot tell whether is does the entry belong to the training or test set. In that case, I am able to perform a random split for my valdation.</p>
+
+<p>After running a <code>lightgbm</code> model for 5 folds, the AUC-ROC for the above dataset is indeed, around 0.5.</p>
+
+<h4 id="preprocessing">Preprocessing</h4>
+
+<p>I extracted some time features based on the datetime of a post:</p>
+
+<pre><code>Hour, minute, second
+Day of the week
+Month
+Quarter
+Year
+Number of posts on the day
+Number of posts 2 days before (since playoffs have a one-day gap)
+</code></pre>
+
+<p>For the description of a post, I processed the text and applied <code>FastText</code> embeddings to them. Surprisingly, after some cleaning, I was able to find embeddings for 91% of the text. I then converted the 300-dimension embeddigns to 300 columns of features.</p>
+
+<p>Here are some rather unusual contraction mappings that I fixed manually:</p>
+
+<pre><code>contraction_mapping = {&quot;tonight's&quot;: &quot;tonight is&quot;,
+                       &quot;nbaplayoffs&quot;: &quot;NBA playoffs&quot;,
+                       &quot;thisiswhyweplay&quot;: &quot;this is why we play&quot;,
+                       &quot;kingjames&quot;: &quot;lebron james&quot;,
+                       &quot;nbaallstar&quot;: &quot;NBA all-star&quot;,
+                       &quot;nbaonabc&quot;: &quot;NBA on ABC&quot;,
+                       &quot;nbaontnt&quot;: &quot;NBA on TNT&quot;,
+                       &quot;nbapreseason&quot;: &quot;NBA preseason&quot;,
+                       &quot;nbatv&quot;: &quot;NBA TV&quot;,
+                       &quot;nbafinals&quot;: &quot;NBA finals&quot;,
+                       &quot;nbabreakdown&quot;: &quot;NBA breakdown&quot;,
+                       &quot;nbaonespn&quot;: &quot;NBA on ESPN&quot;,
+                       &quot;russwest44&quot;: &quot;russell westbrook&quot;,
+                       &quot;kyrieirving&quot;: &quot;kyrie irving&quot;,
+                       &quot;nbakicks&quot;: &quot;NBA kicks&quot;,
+                       &quot;nbaday&quot;: &quot;NBA birthday&quot;,
+                       &quot;nbasummer&quot;: &quot;NBA summer&quot;,
+                       &quot;tripledoublealert&quot;: &quot;triple double alert&quot;,
+                       &quot;phantomcam&quot;: &quot;phantom camera&quot;}
+</code></pre>
+
+<h4 id="text-features">Text features</h4>
+
+<p>I also extracted the following feature for each document - Description.</p>
+
+<pre><code>Number of #
+Number of @
+Number of punctuations
+Number of uppercase letters
+Number of tokens
+</code></pre>
+
+<h4 id="exploratory-data-analysis">Exploratory data analysis</h4>
+
+<p>Number of posts with time appears to be the most interesting plot.
+<img src="/img/portfolio/nba-post.png" alt="post-time" /></p>
+
+<h4 id="modeling">Modeling</h4>
+
+<p>The metric used by @nba was mean absolute percentage error. I then ran an <code>xgboost</code> model optimizing for this metric:</p>
+
+<pre><code>def mean_absolute_percentage_error(y_true, y_pred): 
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
+def xgb_mape(y_true, dtrain):
+    labels = dtrain.get_label()
+    return 'mape', np.mean(np.abs((y_true - labels) / y_true)) * 100
+</code></pre>
+
+<p>Using <code>StratifiedKFold</code> with <code>k=5</code>, the average MAPE across all 5 folds was 3.46%.</p>
+
+<h4 id="interpretation">Interpretation</h4>
+
+<p><img src="/img/portfolio/nba-shap.png" alt="shap" />
+Apparently, the type of the most (photo of video) and the number of @ signs appears to affect the &ldquo;engagement&rdquo; level fairly significantly!</p>
+         
+      </div>
+    </div>
+  </div>
+</div>
+
+          </div>
+      </div>
+  </div>
+  <script src="https://wjensheng.github.io/js/jquery.min.js"></script>
+<script src="https://wjensheng.github.io/js/bootstrap.min.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.cookie.js"> </script>
+<script src="https://wjensheng.github.io/js/ekko-lightbox.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.scrollTo.min.js"></script>
+<script src="https://wjensheng.github.io/js/masonry.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/imagesloaded.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/owl.carousel.min.js"></script>
+<script src="https://wjensheng.github.io/js/front.js"></script>
+
+
+
+</body>
+</html>

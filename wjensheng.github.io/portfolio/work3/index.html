@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Grab AI for S.E.A. challenge - Safety</title>
+<meta name="description" content="My website">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="all,follow">
+<meta name="googlebot" content="index,follow,snippet,archive">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/bootstrap.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,300,700,400italic">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.carousel.css">
+<link rel="stylesheet" href="https://wjensheng.github.io/css/owl.theme.css">
+
+
+  <link href="https://wjensheng.github.io/css/style.default.css" rel="stylesheet" id="theme-stylesheet">
+
+ 
+
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+
+<link href="https://wjensheng.github.io/css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" href="https://wjensheng.github.io/img/favicon.png">
+
+
+</head>
+<body>
+  <div id="all">
+      <div class="container-fluid">
+          <div class="row row-offcanvas row-offcanvas-left">
+              <div id="sidebar" class="col-xs-6 col-sm-4 col-md-3 sidebar-offcanvas">
+  <div class="sidebar-content">
+    <h1 class="sidebar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+    
+      <p class="sidebar-p">Economics & Data Science major at University of Michigan.</p>
+    
+    <ul class="sidebar-menu">
+      
+        <li><a href="https://wjensheng.github.io/portfolio/">Home</a></li>
+      
+        <li><a href="https://wjensheng.github.io/about/">About</a></li>
+      
+        <li><a href="https://wjensheng.github.io/contact/">Get in touch</a></li>
+      
+    </ul>
+    <p class="social">
+  
+  
+  
+  
+  
+  <a href="mailto:jenshengw@gmail.com" data-animate-hover="pulse" class="email">
+    <i class="fa fa-envelope"></i>
+  </a>
+  
+  
+  
+  
+  <a href="https://github.com/wjensheng" data-animate-hover="pulse" class="external">
+    <i class="fa fa-github"></i>
+  </a>
+  
+  
+  
+</p>
+
+
+    <div class="copyright">
+      <p class="credit">
+        
+          &copy;2016 wjensheng
+        
+        | Template by <a href="https://bootstrapious.com/free-templates" class="external">Bootstrapious.com</a>
+
+&amp; ported to Hugo by <a href="https://github.com/kishaningithub">Kishan B</a>
+
+      </p>
+    </div>
+  </div>
+</div>
+
+              
+<div class="col-xs-12 col-sm-8 col-md-9 content-column white-background">
+  <div class="small-navbar visible-xs">
+  <button type="button" data-toggle="offcanvas" class="btn btn-ghost pull-left"> <i class="fa fa-align-left"> </i>Menu</button>
+  <h1 class="small-navbar-heading"><a href="https://wjensheng.github.io/">Jen Sheng Wong</a></h1>
+</div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="content-column-content">
+         <h1>Grab AI for S.E.A. challenge - Safety</h1>
+         <p>Derive a model to detect dangerous driving trips</p>
+
+<h4 id="introduction">Introduction</h4>
+
+<p>This post details an analysis and modeling for Grab AI for S.E.A. challenge - Safety.</p>
+
+<h4 id="exploratory-data-analysis">Exploratory data analysis</h4>
+
+<p>I started my analysis with trip duration. It was found that the shortest trip time is ~2 minutes, which is rather unusual. This might be due to the rider cancelling the ride. Seeing the 10th percentile is ~6 minutes, I decide to remove trips taking less than 3 minutes and I will keep a flag for trips taking less than 5 minutes in the later part.</p>
+
+<p>The longest trip time is 415,500 hours while the 99.9th percentile is 55 minutes. I will remove anything larger than 55 minutes.</p>
+
+<h4 id="feature-engineering">Feature engineering</h4>
+
+<p>Before performing any feature engineering, the intuition I had on what distinguishes a dangerous trip from a safe trip are: aggresive turns, harsh breakings, and driving at high speed.</p>
+
+<p>I took the first order derivative for the acceleration and gyroscope reading. I also calculated the roll and pitch as follows:</p>
+
+<pre><code>def roll(df):
+    # roll  
+    yz = df[['acceleration_y', 'acceleration_z']].values
+    y, z = yz[:, 0], yz[:, 1]
+       
+    df['roll'] = np.arctan2(y, z)
+    
+def pitch(df):
+    # pitch
+    xyz = df[['acceleration_x', 'acceleration_y', 'acceleration_z']].values
+    x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
+    
+    df['pitch'] = np.arctan2(-x, np.sqrt(np.power(y, 2) + np.power(z, 2)))
+</code></pre>
+
+<p>I went on to take the aggregate/statistical features such as <code>min</code>, <code>max</code>, and <code>mean</code> for the acceleration and gyroscope readings. Besides, I counted the number of times the acceleration exceeded certain thresholds such as the following:</p>
+
+<pre><code>def count_above_2(x, thres=2):
+    return (sum(x &gt;= thres) + sum(x &lt;= -thres))  
+</code></pre>
+
+<p>Knowing that impatient drivers are more likely to be dangerous drivers. A common charecteristic is the tendency to take alternative longer routes in lieu of congested main road or stopping for red lights.</p>
+
+<p>This will result in them having travelled a longer distance in a shorter amount of time.</p>
+
+<p>I intend to model this behaviour by assigning the label <code>too_far</code> to drivers who take roughly the same amount of travel time but has the <code>distance_sum</code> in the 90th percentile.</p>
+
+<h4 id="modeling">Modeling</h4>
+
+<p>After preprocessing and feature engineering, I moved on the modeling part. My best performing model is a <code>lightgbm</code> tuned using <code>hyperopt</code>.</p>
+
+<h4 id="feature-selection">Feature selection</h4>
+
+<p>For the first run, I selected all 167 features but after running <code>lightgbm</code> twice and narrowing the most important features into half each run, I am left with 41 features. The 41 features here manage to achieve a higher AUC-ROC score compared to 167 features.</p>
+
+<p>Other features that are excluded from the statistics summary are Accuracy and Bearing. Accuracy refers to how accurate the GPS is in recording the device&rsquo;s position and Bearing is merely the direction the driver is heading. Those two do not correspond to the intuition on how they would be able to capture whether is a trip safe or dangerous.</p>
+
+<h4 id="validation">Validation</h4>
+
+<p>For the validation part, I used <code>sklearn</code>&rsquo;s <code>StratifiedKFold</code> with <code>k=5</code>. The final overall ROC-AUC score averaged over 5 folds is 0.731.</p>
+
+<h4 id="observations">Observations</h4>
+
+<h5 id="leak-features">Leak features</h5>
+
+<p>max_second happens to be the most predictive variable to whether is a trip safe or dangerous. Removing this &ldquo;feature&rdquo; reduces the ROC-AUC from 0.720 to 0.680.</p>
+
+<p>In my humble opinion, if Grab were to do real-time prediction, this feature has little value from the business or practical point of view. Nevertheless, I am drawing the conclusion that longer trips tend to be more dangerous based on the EDA shown on the previous notebook.</p>
+
+<h5 id="top-3-importance-features">Top 3 importance features</h5>
+
+<p>Excluding max_second, the feature importance plot by lightgbm shows that the most predictive feature is horsepower_median, Speed_max, Speed_median. These make sense intuitively since driving at a higher speed indicates driving more dangerously.</p>
+
+<h4 id="interpretation">Interpretation</h4>
+
+<p>To understand each feature from the best model, I ran <code>shap</code> on <code>lightgbm</code>.</p>
+
+<p><img src="/img/portfolio/shap.png" alt="shap" /></p>
+
+<p>From the plot above, we can tell that summary statistics related to <code>second_max</code> has the highest impact on the <code>label</code>.</p>
+
+<p><img src="/img/portfolio/tree.png" alt="tree" />
+Features here correspond to the intuition set up earlier. In each trip, we want to extract the maximum speed the driver achieved.</p>
+         
+      </div>
+    </div>
+  </div>
+</div>
+
+          </div>
+      </div>
+  </div>
+  <script src="https://wjensheng.github.io/js/jquery.min.js"></script>
+<script src="https://wjensheng.github.io/js/bootstrap.min.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.cookie.js"> </script>
+<script src="https://wjensheng.github.io/js/ekko-lightbox.js"></script>
+<script src="https://wjensheng.github.io/js/jquery.scrollTo.min.js"></script>
+<script src="https://wjensheng.github.io/js/masonry.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/imagesloaded.pkgd.min.js"></script>
+<script src="https://wjensheng.github.io/js/owl.carousel.min.js"></script>
+<script src="https://wjensheng.github.io/js/front.js"></script>
+
+
+
+</body>
+</html>

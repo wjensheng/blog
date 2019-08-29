@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Portfolios on Jen Sheng Wong</title>
+    <link>https://wjensheng.github.io/portfolio/</link>
+    <description>Recent content in Portfolios on Jen Sheng Wong</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 05 Nov 2016 19:59:22 +0530</lastBuildDate>
+    
+	<atom:link href="https://wjensheng.github.io/portfolio/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Christie&#39;s Art Auction</title>
+      <link>https://wjensheng.github.io/portfolio/work2/</link>
+      <pubDate>Sat, 05 Nov 2016 19:41:01 +0530</pubDate>
+      
+      <guid>https://wjensheng.github.io/portfolio/work2/</guid>
+      <description>&lt;p&gt;Exploratory data analysis on artwork sold on Christie&amp;rsquo;s, an auction house&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Grab AI for S.E.A. challenge - Safety</title>
+      <link>https://wjensheng.github.io/portfolio/work3/</link>
+      <pubDate>Sat, 05 Nov 2016 19:44:32 +0530</pubDate>
+      
+      <guid>https://wjensheng.github.io/portfolio/work3/</guid>
+      <description>&lt;p&gt;Derive a model to detect dangerous driving trips&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>NBA Hackathon 2019</title>
+      <link>https://wjensheng.github.io/portfolio/work4/</link>
+      <pubDate>Sat, 05 Nov 2016 19:50:47 +0530</pubDate>
+      
+      <guid>https://wjensheng.github.io/portfolio/work4/</guid>
+      <description>&lt;p&gt;Predict engagement of Instagram posts by @nba&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Career Village</title>
+      <link>https://wjensheng.github.io/portfolio/work5/</link>
+      <pubDate>Sat, 05 Nov 2016 19:53:42 +0530</pubDate>
+      
+      <guid>https://wjensheng.github.io/portfolio/work5/</guid>
+      <description>&lt;p&gt;Develop a method to recommend relevant questions to the professionals who are most likely to answer them&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Ernst &amp; Young</title>
+      <link>https://wjensheng.github.io/portfolio/work6/</link>
+      <pubDate>Sat, 05 Nov 2016 19:56:17 +0530</pubDate>
+      
+      <guid>https://wjensheng.github.io/portfolio/work6/</guid>
+      <description>&lt;p&gt;Predict location of mobile device given historical trajectory data&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CarMax Sales Inventory</title>
+      <link>https://wjensheng.github.io/portfolio/work7/</link>
+      <pubDate>Sat, 05 Nov 2016 19:57:40 +0530</pubDate>
+      
+      <guid>https://wjensheng.github.io/portfolio/work7/</guid>
+      <description>&lt;p&gt;An exploratory data analysis and sales forecase for CarMax&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>2019 MDataHack</title>
+      <link>https://wjensheng.github.io/portfolio/work8/</link>
+      <pubDate>Sat, 05 Nov 2016 19:59:22 +0530</pubDate>
+      
+      <guid>https://wjensheng.github.io/portfolio/work8/</guid>
+      <description>&lt;p&gt;Predict ideal position for hockey players based on body movements&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
