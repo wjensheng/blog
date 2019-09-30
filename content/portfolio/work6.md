@@ -4,7 +4,7 @@ image = "img/portfolio/ey.jpg"
 date = "2016-11-05T19:56:17+05:30"
 title = "Ernst & Young"
 showonlyimage = false
-weight = 6
+weight = 4
 +++
 
 Predict location of mobile device given historical trajectory data

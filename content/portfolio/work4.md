@@ -4,7 +4,7 @@ image = "img/portfolio/nbalogo.jpg"
 showonlyimage = false
 date = "2016-11-05T19:50:47+05:30"
 title = "NBA Hackathon 2019"
-weight = 4
+weight = 6
 +++
 
 Predict engagement of Instagram posts by @nba

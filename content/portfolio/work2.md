@@ -146,7 +146,7 @@ It only took 5 minutes to 48,343 entries!
 In the end, I successfully extracted 44.48% traditional art media from and 82.31% of dimension the descriptions for all the entries!
 
 ##### Further details
-Please check https://nbviewer.jupyter.org/github/wjensheng/post_war_art/blob/master/01-christies_eda.ipynb out to see the above findings!
+Please check https://nbviewer.jupyter.org/github/wjensheng/christies/blob/master/01-christies_eda.ipynb out to see the above findings!
 
 [1]: /img/portfolio/dollar1.png
 [2]: /img/portfolio/dollar2.png
