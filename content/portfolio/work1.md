@@ -4,7 +4,7 @@ showonlyimage = false
 date = "2019-08-31T19:44:32+05:30"
 title = "Recursion Cellular Image Classification"
 draft = false
-weight = 10
+weight = 1
 +++
 
 Disentangling biological signal from experimental noise in cellular images
@@ -13,7 +13,7 @@ Disentangling biological signal from experimental noise in cellular images
 ![rxrx][1]
 [1]: /img/portfolio/rxrx.png
 ### Introduction
-This post presents my solution and lessons learned for Recursion Cellular Image Classification. In this competition, participants have to disentangle experimental noise from real biological signals. Entries will classify images of cells under one of 1,108 different genetic perturbations. The goal of the competition is to help eliminate the noise introduced by technical execution and environmental variation between experiments.
+This post presents my solution and lessons learned for Recursion Cellular Image Classification. In this competition, participants have to disentangle experimental noise from real biological signals. Entries will classify images of cells under one of 1,108 different genetic perturbations. The goal of the competition is to help eliminate the noise introduced by technical execution and environmental variation between experiments. Code can be found at https://github.com/wjensheng/recursion.
 
 ### Lessons learned
 #### Running GPU instances on Google Cloud Platform (GCP)
